@@ -4,6 +4,7 @@ const dotenv = require('dotenv');
 
 const connectDB = require('./config/db');
 const authRoutes = require('./routes/authRoutes');
+const { notFound, errorHandler } = require('./middleware/errorMiddleware');
 
 dotenv.config();
 
@@ -25,6 +26,10 @@ app.get('/health', (req, res) => {
   res.json({ status: 'UP', timestamp: new Date().toISOString() });
 });
 app.use('/api/auth', authRoutes);
+
+// Error Handling Middleware
+app.use(notFound);
+app.use(errorHandler);
 
 const PORT = process.env.PORT || 5000;
 
