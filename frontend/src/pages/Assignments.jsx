@@ -8,6 +8,8 @@ const Assignments = () => {
     const [loading, setLoading] = useState(true);
     const [selectedAssignment, setSelectedAssignment] = useState(null);
     const [submissionData, setSubmissionData] = useState('');
+    const [dragActive, setDragActive] = useState(false);
+    const [selectedFile, setSelectedFile] = useState(null);
 
     useEffect(() => {
         fetchAssignments();
@@ -21,6 +23,31 @@ const Assignments = () => {
             console.error('Failed to fetch assignments', error);
         } finally {
             setLoading(false);
+        }
+    };
+
+    const handleDrag = (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        if (e.type === "dragenter" || e.type === "dragover") {
+            setDragActive(true);
+        } else if (e.type === "dragleave") {
+            setDragActive(false);
+        }
+    };
+
+    const handleDrop = (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        setDragActive(false);
+        if (e.dataTransfer.files && e.dataTransfer.files[0]) {
+            setSelectedFile(e.dataTransfer.files[0]);
+        }
+    };
+
+    const handleFileChange = (e) => {
+        if (e.target.files && e.target.files[0]) {
+            setSelectedFile(e.target.files[0]);
         }
     };
 
@@ -123,24 +150,63 @@ const Assignments = () => {
 
                 {/* Modal for submission */}
                 {selectedAssignment && (
-                    <div style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, background: 'rgba(0,0,0,0.6)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 1000 }}>
-                        <div className="card" style={{ width: '400px', maxWidth: '90%' }}>
-                            <h3 style={{ marginBottom: '8px' }}>Submit Assignment</h3>
-                            <p style={{ color: 'var(--text-muted)', marginBottom: '16px', fontSize: '0.9rem' }}>{selectedAssignment.title}</p>
+                    <div style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, background: 'rgba(0,0,0,0.8)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 1000, backdropFilter: 'blur(4px)' }}>
+                        <div className="card" style={{ width: '500px', maxWidth: '90%', padding: '32px' }}>
+                            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '24px' }}>
+                                <h3 style={{ fontSize: '1.5rem', fontWeight: '800' }}>Submit Assignment</h3>
+                                <button className="btn" onClick={() => { setSelectedAssignment(null); setSelectedFile(null); }} style={{ padding: '8px', color: 'var(--text-muted)' }}>✕</button>
+                            </div>
 
-                            <label style={{ display: 'block', marginBottom: '8px', color: 'var(--text-secondary)' }}>
-                                Submission details ({selectedAssignment.submissionType}):
+                            <div style={{ marginBottom: '24px', padding: '16px', background: 'rgba(99,102,241,0.05)', borderRadius: '12px', border: '1px solid rgba(99,102,241,0.1)' }}>
+                                <p style={{ color: 'var(--primary-light)', fontWeight: 'bold', fontSize: '0.9rem', marginBottom: '4px' }}>{selectedAssignment.title}</p>
+                                <p style={{ color: 'var(--text-muted)', fontSize: '0.8rem' }}>Type: {selectedAssignment.submissionType}</p>
+                            </div>
+
+                            <label style={{ display: 'block', marginBottom: '12px', color: 'var(--text-secondary)', fontWeight: '600' }}>
+                                File Upload or Comments:
                             </label>
+
+                            <div
+                                onDragEnter={handleDrag}
+                                onDragOver={handleDrag}
+                                onDragLeave={handleDrag}
+                                onDrop={handleDrop}
+                                style={{
+                                    border: `2px dashed ${dragActive ? 'var(--primary)' : 'rgba(255,255,255,0.1)'}`,
+                                    borderRadius: '12px',
+                                    padding: '32px',
+                                    textAlign: 'center',
+                                    background: dragActive ? 'rgba(99,102,241,0.1)' : 'rgba(255,255,255,0.02)',
+                                    marginBottom: '20px',
+                                    cursor: 'pointer',
+                                    transition: 'all 0.2s'
+                                }}
+                                onClick={() => document.getElementById('file-upload').click()}
+                            >
+                                <Upload size={32} color={selectedFile ? 'var(--success)' : 'var(--text-muted)'} style={{ marginBottom: '12px' }} />
+                                {selectedFile ? (
+                                    <div style={{ color: 'var(--success)', fontWeight: 'bold' }}>{selectedFile.name}</div>
+                                ) : (
+                                    <div style={{ color: 'var(--text-muted)' }}>
+                                        <p style={{ fontWeight: 'bold', color: 'var(--text-primary)', marginBottom: '4px' }}>Drag & drop your file here</p>
+                                        <p style={{ fontSize: '0.85rem' }}>or click to browse from manager</p>
+                                    </div>
+                                )}
+                                <input id="file-upload" type="file" style={{ display: 'none' }} onChange={handleFileChange} />
+                            </div>
+
                             <textarea
-                                style={{ width: '100%', padding: '12px', background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '6px', color: '#fff', minHeight: '100px', marginBottom: '16px' }}
-                                placeholder="Paste your link or text here..."
+                                style={{ width: '100%', padding: '16px', background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '12px', color: '#fff', minHeight: '100px', marginBottom: '24px', resize: 'vertical' }}
+                                placeholder="Add any additional notes (Optional)..."
                                 value={submissionData}
                                 onChange={(e) => setSubmissionData(e.target.value)}
                             />
 
                             <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '12px' }}>
-                                <button className="btn btn-secondary" onClick={() => setSelectedAssignment(null)}>Cancel</button>
-                                <button className="btn btn-primary" onClick={handleSubmit}>Confirm Submit</button>
+                                <button className="btn btn-secondary" style={{ padding: '10px 24px' }} onClick={() => { setSelectedAssignment(null); setSelectedFile(null); }}>Cancel</button>
+                                <button className="btn btn-primary" style={{ padding: '10px 32px', fontWeight: 'bold' }} onClick={handleSubmit}>
+                                    Confirm & Submit
+                                </button>
                             </div>
                         </div>
                     </div>

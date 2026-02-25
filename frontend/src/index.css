@@ -469,6 +469,13 @@ select {
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   position: relative;
   overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Standardized Stat Card with Fixed Height */
+.stat-card {
+  min-height: 380px;
 }
 
 .card:hover {
@@ -618,8 +625,11 @@ select {
 .greeting-card {
   background: var(--gradient-primary);
   border: none;
-  padding: 28px 32px;
+  padding: 20px 32px;
+  /* Reduced vertical padding */
   grid-column: 1 / -1;
+  min-height: auto;
+  /* Ensure it doesn't stretch */
 }
 
 .greeting-card h2 {

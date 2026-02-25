@@ -5,6 +5,7 @@ const User = require('./models/User');
 const Course = require('./models/Course');
 const Quiz = require('./models/Quiz');
 const Assignment = require('./models/Assignment');
+const Attendance = require('./models/Attendance');
 
 dotenv.config();
 
@@ -18,6 +19,7 @@ const seedData = async () => {
         await Course.deleteMany();
         await Quiz.deleteMany();
         await Assignment.deleteMany();
+        await Attendance.deleteMany();
 
         console.log('Existing data cleared.');
 
@@ -180,6 +182,26 @@ const seedData = async () => {
         ]);
 
         console.log('Assignments seeded.');
+
+        // 5. Create Attendance records
+        for (const course of courses) {
+            await Attendance.create({
+                courseId: course._id,
+                studentId: user._id,
+                totalClasses: 20,
+                presentDays: 16,
+                attendancePercentage: 80,
+                attendanceHistory: [
+                    { date: new Date(Date.now() - 5 * 24 * 60 * 60 * 1000), status: 'Present' },
+                    { date: new Date(Date.now() - 4 * 24 * 60 * 60 * 1000), status: 'Present' },
+                    { date: new Date(Date.now() - 3 * 24 * 60 * 60 * 1000), status: 'Absent' },
+                    { date: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000), status: 'Present' },
+                    { date: new Date(Date.now() - 1 * 24 * 60 * 60 * 1000), status: 'Present' }
+                ]
+            });
+        }
+
+        console.log('Attendance seeded.');
         console.log('Database Seeding Complete! 🚀');
         process.exit();
 

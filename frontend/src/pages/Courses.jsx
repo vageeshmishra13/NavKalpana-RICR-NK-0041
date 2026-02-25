@@ -57,7 +57,7 @@ const Courses = () => {
                                     </div>
                                 </div>
 
-                                <div style={{ display: 'flex', gap: '12px' }}>
+                                <div style={{ display: 'flex', gap: '12px', marginTop: 'auto' }}>
                                     <Link to={`/courses/${course._id}`} className="btn btn-primary" style={{ flex: 1, textAlign: 'center', padding: '10px' }}>
                                         Continue
                                     </Link>

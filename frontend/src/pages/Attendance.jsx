@@ -37,7 +37,7 @@ const Attendance = () => {
                 ) : (
                     <div className="dashboard-grid">
                         {attendanceRecords.map(record => (
-                            <div key={record._id} className="card stat-card">
+                            <div key={record._id} className="card stat-card" style={{ padding: '32px' }}>
                                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '16px' }}>
                                     <div className="card-icon" style={{ background: 'rgba(56,189,248,0.15)' }}>
                                         <Calendar size={24} color="#38bdf8" />
