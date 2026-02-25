@@ -59,9 +59,19 @@ const Quizzes = () => {
                 <Sidebar hideMobile={true} />
                 <main className="main-content">
                     <div className="card" style={{ maxWidth: '800px', margin: '0 auto' }}>
-                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '24px', borderBottom: '1px solid rgba(255,255,255,0.05)', paddingBottom: '16px' }}>
-                            <h2>{activeQuiz.title}</h2>
-                            <div style={{ display: 'flex', alignItems: 'center', gap: '8px', color: '#f59e0b' }}>
+                        <div style={{
+                            display: 'flex',
+                            justifyContent: 'space-between',
+                            alignItems: 'center',
+                            marginBottom: '32px',
+                            paddingBottom: '20px',
+                            borderBottom: '1px solid var(--border)'
+                        }}>
+                            <div>
+                                <h4 style={{ color: 'var(--text-muted)', textTransform: 'uppercase', fontSize: '0.75rem', fontWeight: 'bold', letterSpacing: '0.1em', marginBottom: '4px' }}>Active Quiz</h4>
+                                <h2 style={{ fontSize: '1.75rem', fontWeight: '800' }}>{activeQuiz.title}</h2>
+                            </div>
+                            <div style={{ display: 'flex', alignItems: 'center', gap: '8px', padding: '8px 16px', background: 'rgba(245, 158, 11, 0.1)', borderRadius: '30px', color: '#f59e0b', fontWeight: 'bold' }}>
                                 <Clock size={18} /> {activeQuiz.durationMins} mins
                             </div>
                         </div>
@@ -113,9 +123,13 @@ const Quizzes = () => {
         <div className="app-layout">
             <Sidebar />
             <main className="main-content">
-                <div className="card greeting-card" style={{ marginBottom: '24px' }}>
+                <div className="card greeting-card" style={{
+                    marginBottom: '24px',
+                    background: 'var(--gradient-accent)',
+                    border: 'none'
+                }}>
                     <h2>Quizzes</h2>
-                    <p>Test your knowledge and earn streak points.</p>
+                    <p style={{ opacity: 0.9 }}>Test your knowledge and earn streak points.</p>
                 </div>
 
                 {loading ? (

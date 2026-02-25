@@ -40,12 +40,19 @@ const Support = () => {
         <div className="app-layout">
             <Sidebar />
             <main className="main-content">
-                <div className="card greeting-card" style={{ marginBottom: '24px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                <div className="card greeting-card" style={{
+                    marginBottom: '24px',
+                    display: 'flex',
+                    justifyContent: 'space-between',
+                    alignItems: 'center',
+                    background: 'var(--gradient-success)',
+                    border: 'none'
+                }}>
                     <div>
                         <h2>Learning Support</h2>
-                        <p>Request backup classes or submit your doubts.</p>
+                        <p style={{ opacity: 0.9 }}>Request backup classes or submit your doubts.</p>
                     </div>
-                    <button className="btn btn-primary" onClick={() => setShowModal(true)}>+ New Request</button>
+                    <button className="btn btn-primary" style={{ background: 'rgba(0,0,0,0.2)', border: '1px solid rgba(255,255,255,0.3)' }} onClick={() => setShowModal(true)}>+ New Request</button>
                 </div>
 
                 {loading ? (

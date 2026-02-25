@@ -57,9 +57,13 @@ const Assignments = () => {
         <div className="app-layout">
             <Sidebar />
             <main className="main-content">
-                <div className="card greeting-card" style={{ marginBottom: '24px' }}>
+                <div className="card greeting-card" style={{
+                    marginBottom: '24px',
+                    background: 'var(--gradient-secondary)',
+                    border: 'none'
+                }}>
                     <h2>Assignments</h2>
-                    <p>Submit your pending work and track your evaluations.</p>
+                    <p style={{ opacity: 0.9 }}>Submit your pending work and track your evaluations.</p>
                 </div>
 
                 {loading ? (
@@ -71,45 +75,49 @@ const Assignments = () => {
                         <div className="card-header" style={{ marginBottom: '16px' }}>
                             <span className="card-title">Pending & Previous Assignments</span>
                         </div>
-                        <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left' }}>
-                            <thead>
-                                <tr style={{ borderBottom: '1px solid rgba(255,255,255,0.05)' }}>
-                                    <th style={{ padding: '12px', color: 'var(--text-muted)' }}>Title</th>
-                                    <th style={{ padding: '12px', color: 'var(--text-muted)' }}>Deadline</th>
-                                    <th style={{ padding: '12px', color: 'var(--text-muted)' }}>Status</th>
-                                    <th style={{ padding: '12px', color: 'var(--text-muted)' }}>Marks</th>
-                                    <th style={{ padding: '12px', color: 'var(--text-muted)' }}>Action</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                {assignments.map(a => (
-                                    <tr key={a._id} style={{ borderBottom: '1px solid rgba(255,255,255,0.02)' }}>
-                                        <td style={{ padding: '16px 12px' }}>
-                                            <div style={{ fontWeight: '500' }}>{a.title}</div>
-                                            <div style={{ fontSize: '0.85rem', color: 'var(--text-muted)' }}>{a.description}</div>
-                                        </td>
-                                        <td style={{ padding: '16px 12px', color: 'var(--text-secondary)' }}>
-                                            {new Date(a.deadline).toLocaleDateString()}
-                                        </td>
-                                        <td style={{ padding: '16px 12px' }}>{getStatusBadge(a.status)}</td>
-                                        <td style={{ padding: '16px 12px', fontWeight: 'bold' }}>{a.marks !== null ? a.marks : '-'}</td>
-                                        <td style={{ padding: '16px 12px' }}>
-                                            {a.status === 'Not Submitted' ? (
-                                                <button
-                                                    className="btn btn-primary"
-                                                    style={{ padding: '6px 16px', display: 'flex', alignItems: 'center', gap: '6px' }}
-                                                    onClick={() => setSelectedAssignment(a)}
-                                                >
-                                                    <Upload size={14} /> Submit
-                                                </button>
-                                            ) : (
-                                                <button className="btn" disabled style={{ padding: '6px 16px', opacity: 0.5 }}>Submitted</button>
-                                            )}
-                                        </td>
+                        <div style={{ overflowX: 'auto' }}>
+                            <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left' }}>
+                                <thead>
+                                    <tr style={{ background: 'rgba(255,255,255,0.02)' }}>
+                                        <th style={{ padding: '16px 12px', color: 'var(--text-muted)', fontSize: '0.85rem', fontWeight: '600', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Title</th>
+                                        <th style={{ padding: '16px 12px', color: 'var(--text-muted)', fontSize: '0.85rem', fontWeight: '600', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Deadline</th>
+                                        <th style={{ padding: '16px 12px', color: 'var(--text-muted)', fontSize: '0.85rem', fontWeight: '600', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Status</th>
+                                        <th style={{ padding: '16px 12px', color: 'var(--text-muted)', fontSize: '0.85rem', fontWeight: '600', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Marks</th>
+                                        <th style={{ padding: '16px 12px', color: 'var(--text-muted)', fontSize: '0.85rem', fontWeight: '600', textTransform: 'uppercase', letterSpacing: '0.05em', textAlign: 'right' }}>Action</th>
                                     </tr>
-                                ))}
-                            </tbody>
-                        </table>
+                                </thead>
+                                <tbody>
+                                    {assignments.map(a => (
+                                        <tr key={a._id} style={{ borderBottom: '1px solid var(--border)' }}>
+                                            <td style={{ padding: '20px 12px' }}>
+                                                <div style={{ fontWeight: '600', color: 'var(--text-primary)', marginBottom: '4px' }}>{a.title}</div>
+                                                <div style={{ fontSize: '0.85rem', color: 'var(--text-secondary)', maxWidth: '300px' }}>{a.description}</div>
+                                            </td>
+                                            <td style={{ padding: '20px 12px', color: 'var(--text-secondary)', fontSize: '0.9rem' }}>
+                                                {new Date(a.deadline).toLocaleDateString(undefined, { month: 'short', day: 'numeric', year: 'numeric' })}
+                                            </td>
+                                            <td style={{ padding: '20px 12px' }}>{getStatusBadge(a.status)}</td>
+                                            <td style={{ padding: '20px 12px', fontWeight: '700', color: a.marks >= 90 ? 'var(--success)' : 'var(--text-primary)' }}>
+                                                {a.marks !== null ? `${a.marks}/100` : '-'}
+                                            </td>
+                                            <td style={{ padding: '20px 12px', textAlign: 'right' }}>
+                                                {a.status === 'Not Submitted' ? (
+                                                    <button
+                                                        className="btn btn-primary"
+                                                        style={{ padding: '8px 20px', display: 'inline-flex', alignItems: 'center', gap: '8px', fontSize: '0.85rem' }}
+                                                        onClick={() => setSelectedAssignment(a)}
+                                                    >
+                                                        <Upload size={14} /> Submit
+                                                    </button>
+                                                ) : (
+                                                    <span style={{ fontSize: '0.85rem', color: 'var(--text-muted)', fontWeight: '500' }}>Completed</span>
+                                                )}
+                                            </td>
+                                        </tr>
+                                    ))}
+                                </tbody>
+                            </table>
+                        </div>
                     </div>
                 )}
 

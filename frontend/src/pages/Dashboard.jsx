@@ -68,11 +68,18 @@ const Dashboard = () => {
         <div className="app-layout">
             <Sidebar />
             <main className="main-content">
-                {/* Greeting */}
-                <div className="card greeting-card" style={{ marginBottom: '24px' }}>
-                    <h2>{getGreeting()}, {user?.name?.split(' ')[0] || 'Student'}! 👋</h2>
-                    <p>Ready to continue your learning journey? You&apos;re on a {stats.learningStreak}-day streak!</p>
-                    <div className="greeting-time">{timeStr} · {dateStr}</div>
+                <div className="card greeting-card" style={{
+                    marginBottom: '24px',
+                    background: 'var(--gradient-primary)',
+                    border: 'none',
+                    position: 'relative',
+                    overflow: 'hidden'
+                }}>
+                    <div style={{ position: 'relative', zIndex: 1 }}>
+                        <h2 style={{ fontSize: '2rem', fontWeight: '800', marginBottom: '8px' }}>{getGreeting()}, {user?.name?.split(' ')[0] || 'Student'}! 👋</h2>
+                        <p style={{ fontSize: '1.1rem', opacity: 0.9 }}>Ready to continue your learning journey? You&apos;re on a <span style={{ fontWeight: 'bold' }}>{stats.learningStreak}-day</span> streak!</p>
+                        <div className="greeting-time" style={{ marginTop: '16px', opacity: 0.8, fontSize: '0.85rem' }}>{timeStr} · {dateStr}</div>
+                    </div>
                 </div>
 
                 {/* Stat Cards Row */}
@@ -150,24 +157,27 @@ const Dashboard = () => {
                             <span className="card-title">Weekly Learning Activity</span>
                             <BookOpen size={18} color="var(--text-muted)" />
                         </div>
-                        <ResponsiveContainer width="100%" height={200}>
-                            <AreaChart data={weeklyData}>
-                                <defs>
-                                    <linearGradient id="colorLessons" x1="0" y1="0" x2="0" y2="1">
-                                        <stop offset="5%" stopColor="#6366f1" stopOpacity={0.3} />
-                                        <stop offset="95%" stopColor="#6366f1" stopOpacity={0} />
-                                    </linearGradient>
-                                </defs>
-                                <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.05)" />
-                                <XAxis dataKey="day" stroke="#64748b" fontSize={12} />
-                                <YAxis stroke="#64748b" fontSize={12} />
-                                <Tooltip
-                                    contentStyle={{ background: '#1a1a2e', border: '1px solid rgba(255,255,255,0.08)', borderRadius: '8px' }}
-                                    labelStyle={{ color: '#f1f5f9' }}
-                                />
-                                <Area type="monotone" dataKey="lessons" stroke="#6366f1" strokeWidth={2} fill="url(#colorLessons)" />
-                            </AreaChart>
-                        </ResponsiveContainer>
+                        <div style={{ padding: '20px 0' }}>
+                            <ResponsiveContainer width="100%" height={220}>
+                                <AreaChart data={weeklyData}>
+                                    <defs>
+                                        <linearGradient id="colorLessons" x1="0" y1="0" x2="0" y2="1">
+                                            <stop offset="5%" stopColor="#6366f1" stopOpacity={0.3} />
+                                            <stop offset="95%" stopColor="#6366f1" stopOpacity={0} />
+                                        </linearGradient>
+                                    </defs>
+                                    <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.05)" vertical={false} />
+                                    <XAxis dataKey="day" stroke="#71717a" fontSize={12} tickLine={false} axisLine={false} dy={10} />
+                                    <YAxis stroke="#71717a" fontSize={12} tickLine={false} axisLine={false} />
+                                    <Tooltip
+                                        contentStyle={{ background: '#18181b', border: '1px solid rgba(255,255,255,0.08)', borderRadius: '12px', boxShadow: '0 10px 15px -3px rgba(0,0,0,0.5)' }}
+                                        labelStyle={{ color: '#fafafa', fontWeight: 'bold', marginBottom: '4px' }}
+                                        itemStyle={{ color: '#818cf8' }}
+                                    />
+                                    <Area type="monotone" dataKey="lessons" stroke="#6366f1" strokeWidth={3} fill="url(#colorLessons)" />
+                                </AreaChart>
+                            </ResponsiveContainer>
+                        </div>
                     </div>
 
                     {/* Leaderboard */}

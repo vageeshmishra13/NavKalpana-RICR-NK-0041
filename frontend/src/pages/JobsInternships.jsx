@@ -19,9 +19,9 @@ const JobsInternships = () => {
                     <p>Explore career opportunities tailored to your skills.</p>
                 </div>
 
-                <div className="dashboard-grid-wide">
+                <div className="dashboard-grid">
                     {jobs.map(job => (
-                        <div key={job.id} className="card stat-card" style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start' }}>
+                        <div key={job.id} className="card stat-card">
                             <div style={{ display: 'flex', justifyContent: 'space-between', width: '100%', marginBottom: '16px' }}>
                                 <div style={{ padding: '12px', background: 'rgba(59,130,246,0.15)', borderRadius: '12px' }}>
                                     <Briefcase size={24} color="#60a5fa" />

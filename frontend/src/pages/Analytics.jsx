@@ -59,15 +59,15 @@ const Analytics = () => {
                     <div className="card" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', textAlign: 'center' }}>
                         <h3 style={{ color: 'var(--text-secondary)', marginBottom: '8px' }}>Overall Growth Index</h3>
 
-                        <div style={{ height: '200px', width: '100%', position: 'relative' }}>
+                        <div style={{ height: '240px', width: '100%', position: 'relative', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                             <ResponsiveContainer width="100%" height="100%">
-                                <RadialBarChart cx="50%" cy="50%" innerRadius="70%" outerRadius="100%" barSize={20} data={radialData} startAngle={180} endAngle={0}>
+                                <RadialBarChart cx="50%" cy="50%" innerRadius="80%" outerRadius="100%" barSize={15} data={radialData} startAngle={210} endAngle={-30}>
                                     <RadialBar minAngle={15} background clockWise dataKey="uv" cornerRadius={10} />
                                 </RadialBarChart>
                             </ResponsiveContainer>
-                            <div style={{ position: 'absolute', top: '65%', left: '50%', transform: 'translate(-50%, -50%)', textAlign: 'center' }}>
-                                <div style={{ fontSize: '3rem', fontWeight: 'bold', color: 'var(--text-primary)', lineHeight: 1 }}>{data.OGI}</div>
-                                <div style={{ fontSize: '0.9rem', color: 'var(--text-muted)' }}>out of 100</div>
+                            <div style={{ position: 'absolute', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center' }}>
+                                <div style={{ fontSize: '3.5rem', fontWeight: '800', color: 'var(--text-primary)', lineHeight: 1 }}>{data.OGI}</div>
+                                <div style={{ fontSize: '0.85rem', color: 'var(--text-muted)', fontWeight: '500', textTransform: 'uppercase', letterSpacing: '0.1em', marginTop: '4px' }}>OGI Score</div>
                             </div>
                         </div>
 
