@@ -4,8 +4,12 @@ const dotenv = require('dotenv');
 
 const connectDB = require('./config/db');
 const authRoutes = require('./routes/authRoutes');
-const { notFound, errorHandler } = require('./middleware/errorMiddleware');
-
+const courseRoutes = require('./routes/courseRoutes');
+const assignmentRoutes = require('./routes/assignmentRoutes');
+const quizRoutes = require('./routes/quizRoutes');
+const attendanceRoutes = require('./routes/attendanceRoutes');
+const supportRoutes = require('./routes/supportRoutes');
+const analyticsRoutes = require('./routes/analyticsRoutes');
 dotenv.config();
 
 const app = express();
@@ -21,16 +25,13 @@ connectDB();
 app.get('/', (req, res) => {
   res.json({ message: 'NavKalpana API is running...' });
 });
-
-app.get('/health', (req, res) => {
-  res.json({ status: 'UP', timestamp: new Date().toISOString() });
-});
 app.use('/api/auth', authRoutes);
-
-// Error Handling Middleware
-app.use(notFound);
-app.use(errorHandler);
-
+app.use('/api/courses', courseRoutes);
+app.use('/api/assignments', assignmentRoutes);
+app.use('/api/quizzes', quizRoutes);
+app.use('/api/attendance', attendanceRoutes);
+app.use('/api/support', supportRoutes);
+app.use('/api/analytics', analyticsRoutes);
 const PORT = process.env.PORT || 5000;
 
 app.listen(PORT, () => {

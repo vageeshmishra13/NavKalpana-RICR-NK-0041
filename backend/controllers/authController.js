@@ -19,7 +19,6 @@ const registerUser = async (req, res) => {
     }
 
     const user = await User.create({ name, email, password });
-    console.log(`New user registered: ${email}`);
 
     res.status(201).json({
       _id: user._id,
@@ -59,7 +58,6 @@ const loginUser = async (req, res) => {
         }
         user.lastActiveDate = new Date();
         await user.save();
-        console.log(`User logged in: ${email} at ${new Date().toISOString()}`);
       }
 
       res.json({
