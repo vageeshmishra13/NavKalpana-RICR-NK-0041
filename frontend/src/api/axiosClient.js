@@ -29,6 +29,21 @@ api.interceptors.request.use(
     }
 );
 
+// Add a response interceptor to handle 401s globally
+api.interceptors.response.use(
+    (response) => response,
+    (error) => {
+        if (error.response && error.response.status === 401) {
+            // If we get a 401, the token is likely stale or invalid
+            // clear state and reload to trigger auto-login or redirect
+            localStorage.removeItem('token');
+            localStorage.removeItem('user');
+            window.location.reload(); 
+        }
+        return Promise.reject(error);
+    }
+);
+
 // Unified API services
 export const courseAPI = {
     getAll: () => api.get('/courses'),
