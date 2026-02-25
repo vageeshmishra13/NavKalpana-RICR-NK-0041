@@ -35,6 +35,10 @@ const assignmentSchema = new mongoose.Schema({
     feedback: {
         type: String,
     },
+    isLate: {
+        type: Boolean,
+        default: false,
+    },
     studentId: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'User',

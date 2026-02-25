@@ -18,7 +18,7 @@ exports.getAssignments = async (req, res) => {
 // @access  Private
 exports.submitAssignment = async (req, res) => {
     try {
-        const { submissionData } = req.body;
+        const { submissionData, submissionType } = req.body;
         const assignment = await Assignment.findOne({ _id: req.params.id, studentId: req.user._id });
 
         if (!assignment) {
@@ -33,8 +33,10 @@ exports.submitAssignment = async (req, res) => {
         const isLate = now > assignment.deadline;
 
         assignment.submissionData = submissionData;
+        assignment.submissionType = submissionType || assignment.submissionType;
         assignment.submissionTime = now;
         assignment.status = isLate ? 'Late' : 'Submitted';
+        assignment.isLate = isLate;
 
         await assignment.save();
 

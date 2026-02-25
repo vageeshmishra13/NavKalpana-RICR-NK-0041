@@ -47,9 +47,12 @@ exports.markLessonComplete = async (req, res) => {
             course.lessonsCompleted += 1;
             course.progressPercentage = Math.round((course.lessonsCompleted / course.totalLessons) * 100);
 
+            // Check if module just got completed
+            const isModuleNewlyCompleted = module.lessons.every(l => l.isCompleted);
+
             await course.save();
 
-            // Update student streak
+            // Update student streak and skills
             const user = await User.findById(req.user._id);
             const today = new Date().toDateString();
             const lastActive = user.lastActiveDate ? new Date(user.lastActiveDate).toDateString() : null;
@@ -57,14 +60,20 @@ exports.markLessonComplete = async (req, res) => {
             if (today !== lastActive) {
                 user.learningStreak += 1;
                 user.lastActiveDate = new Date();
-                await user.save();
             }
 
-            res.json({ course, userStreak: user.learningStreak });
+            if (isModuleNewlyCompleted) {
+                user.skillsAcquired += 1;
+            }
+
+            await user.save();
+
+            res.json({ course, userStreak: user.learningStreak, userSkills: user.skillsAcquired });
         } else {
             res.json({ message: 'Lesson already completed', course });
         }
     } catch (error) {
+        console.error('Mark lesson complete error:', error);
         res.status(500).json({ message: 'Server Error' });
     }
 };
@@ -77,19 +86,33 @@ exports.markCourseComplete = async (req, res) => {
         const course = await Course.findOne({ _id: req.params.id, studentId: req.user._id });
         if (!course) return res.status(404).json({ message: 'Course not found' });
 
-        // Mark all lessons as completed
+        let newlyCompletedModules = 0;
+
+        // Mark all lessons as completed and count newly completed modules
         course.modules.forEach(m => {
+            const wasAlreadyComplete = m.lessons.every(l => l.isCompleted);
             m.lessons.forEach(l => {
                 l.isCompleted = true;
             });
+            if (!wasAlreadyComplete && m.lessons.length > 0) {
+                newlyCompletedModules++;
+            }
         });
 
         course.lessonsCompleted = course.totalLessons;
         course.progressPercentage = 100;
         await course.save();
 
+        // Update user skills
+        if (newlyCompletedModules > 0) {
+            const user = await User.findById(req.user._id);
+            user.skillsAcquired += newlyCompletedModules;
+            await user.save();
+        }
+
         res.json(course);
     } catch (error) {
+        console.error('Mark course complete error:', error);
         res.status(500).json({ message: 'Server Error' });
     }
 };

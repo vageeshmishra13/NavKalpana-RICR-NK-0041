@@ -8,26 +8,32 @@ export const AuthProvider = ({ children }) => {
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
-        const storedUser = localStorage.getItem('user');
-        const token = localStorage.getItem('token');
-        if (storedUser && token) {
-            setUser(JSON.parse(storedUser));
-        } else {
-            // Bypass login for evaluation - Auto-login as test user
-            const demoUser = {
-                _id: 'auto-login-eval-id',
-                name: 'Vageesh Mishra',
-                email: 'test@example.com',
-                role: 'student',
-                learningStreak: 5,
-                skillsAcquired: 4,
-                totalSkills: 10
-            };
-            setUser(demoUser);
-            localStorage.setItem('user', JSON.stringify(demoUser));
-            localStorage.setItem('token', 'demo-token-bypass');
-        }
-        setLoading(false);
+        const checkAuth = async () => {
+            const storedUser = localStorage.getItem('user');
+            const token = localStorage.getItem('token');
+
+            if (storedUser && token) {
+                setUser(JSON.parse(storedUser));
+                setLoading(false);
+            } else {
+                // Auto-login as test user for evaluation
+                try {
+                    const { data } = await API.post('/auth/login', {
+                        email: 'test@example.com',
+                        password: 'password123'
+                    });
+                    localStorage.setItem('token', data.token);
+                    localStorage.setItem('user', JSON.stringify(data));
+                    setUser(data);
+                } catch (error) {
+                    console.error('Auto-login failed:', error);
+                    // Fallback to null if even auto-login fails (e.g. server down)
+                } finally {
+                    setLoading(false);
+                }
+            }
+        };
+        checkAuth();
     }, []);
 
     const login = async (email, password) => {
@@ -52,8 +58,19 @@ export const AuthProvider = ({ children }) => {
         setUser(null);
     };
 
+    const refreshUser = async () => {
+        try {
+            const { data } = await API.get('/auth/profile');
+            localStorage.setItem('user', JSON.stringify(data));
+            setUser(data);
+            return data;
+        } catch (error) {
+            console.error('Failed to refresh user', error);
+        }
+    };
+
     return (
-        <AuthContext.Provider value={{ user, login, register, logout, loading }}>
+        <AuthContext.Provider value={{ user, login, register, logout, refreshUser, loading }}>
             {children}
         </AuthContext.Provider>
     );

@@ -11,34 +11,64 @@ exports.getAnalytics = async (req, res) => {
         const userId = req.user._id;
 
         // 1. Quizzes
-        const quizzes = await Quiz.find({ studentId: userId, status: 'Completed' });
+        const allQuizzes = await Quiz.find({ studentId: userId });
+        const completedQuizzes = allQuizzes.filter(q => q.status === 'Completed');
         let quizAvg = 0;
-        if (quizzes.length > 0) {
-            quizAvg = quizzes.reduce((acc, q) => acc + q.scorePercentage, 0) / quizzes.length;
+        if (completedQuizzes.length > 0) {
+            quizAvg = completedQuizzes.reduce((acc, q) => acc + (q.scorePercentage || 0), 0) / completedQuizzes.length;
         }
 
         // 2. Assignments
-        const assignments = await Assignment.find({ studentId: userId, status: { $in: ['Evaluated', 'Submitted', 'Late'] } });
+        const allAssignments = await Assignment.find({ studentId: userId });
+        const submittedAssignments = allAssignments.filter(a => ['Submitted', 'Late', 'Evaluated'].includes(a.status));
+        const evaluatedAssignments = allAssignments.filter(a => a.status === 'Evaluated');
+
+        // Assignment avg = avg of evaluated marks; fallback to mock 80 for submitted
         let assignmentAvg = 0;
-        // Mock assignment score if not evaluated yet but submitted
-        if (assignments.length > 0) {
-            assignmentAvg = assignments.reduce((acc, a) => acc + (a.marks || 85), 0) / assignments.length;
+        if (allAssignments.length > 0) {
+            const totalMarks = allAssignments.reduce((acc, a) => {
+                if (a.status === 'Evaluated' && a.marks != null) return acc + a.marks;
+                if (a.status === 'Submitted' || a.status === 'Late') return acc + 80; // mock score
+                return acc; // Not submitted = 0 contribution
+            }, 0);
+            assignmentAvg = totalMarks / allAssignments.length;
         }
 
-        // 3. Completion Rate (Courses)
+        // On-time submissions = submitted before deadline (not Late)
+        const onTimeSubmissions = allAssignments.filter(a => a.status === 'Submitted' || a.status === 'Evaluated').length;
+        const consistency = allAssignments.length > 0
+            ? (onTimeSubmissions / allAssignments.length) * 100
+            : 0;
+
+        // Assignment completion percentage
+        const assignmentCompletion = allAssignments.length > 0
+            ? (submittedAssignments.length / allAssignments.length) * 100
+            : 0;
+
+        // 3. Courses — module/lesson completion
         const courses = await Course.find({ studentId: userId });
         let completionRate = 0;
+        let totalModules = 0;
+        let completedModules = 0;
+
         if (courses.length > 0) {
-            completionRate = courses.reduce((acc, c) => acc + c.progressPercentage, 0) / courses.length;
+            completionRate = courses.reduce((acc, c) => acc + (c.progressPercentage || 0), 0) / courses.length;
+            courses.forEach(c => {
+                c.modules.forEach(m => {
+                    totalModules++;
+                    const allDone = m.lessons.every(l => l.isCompleted);
+                    if (allDone && m.lessons.length > 0) completedModules++;
+                });
+            });
         }
 
-        // 4. Consistency (Based on streak, max 100)
+        const moduleCompletionPct = totalModules > 0 ? (completedModules / totalModules) * 100 : 0;
+
+        // 4. Consistency based on learningStreak
         const user = await User.findById(userId);
-        let consistency = Math.min((user.learningStreak / 30) * 100, 100);
 
         // OGI Calculation
-        // (Quiz Average × 0.40) + (Assignment Average × 0.30) + (Completion Rate × 0.20) + (Consistency × 0.10)
-        const OGI = (quizAvg * 0.4) + (assignmentAvg * 0.3) + (completionRate * 0.2) + (consistency * 0.1);
+        const OGI = (quizAvg * 0.40) + (assignmentAvg * 0.30) + (completionRate * 0.20) + (consistency * 0.10);
 
         let classification = 'Needs Attention';
         if (OGI >= 85) classification = 'Excellent';
@@ -52,11 +82,20 @@ exports.getAnalytics = async (req, res) => {
                 quizAvg: Math.round(quizAvg),
                 assignmentAvg: Math.round(assignmentAvg),
                 completionRate: Math.round(completionRate),
-                consistency: Math.round(consistency)
+                consistency: Math.round(consistency),
+                moduleCompletionPct: Math.round(moduleCompletionPct),
+                assignmentCompletion: Math.round(assignmentCompletion),
+                totalQuizzes: allQuizzes.length,
+                completedQuizzes: completedQuizzes.length,
+                totalAssignments: allAssignments.length,
+                submittedAssignments: submittedAssignments.length,
+                onTimeSubmissions,
+                learningStreak: user?.learningStreak || 0,
             }
         });
 
     } catch (error) {
+        console.error('Analytics error:', error);
         res.status(500).json({ message: 'Server Error' });
     }
 };

@@ -37,6 +37,10 @@ const courseSchema = new mongoose.Schema({
         type: Number,
         default: 0,
     },
+    attendancePercentage: {
+        type: Number,
+        default: 0,
+    },
     studentId: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'User',

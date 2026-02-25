@@ -7,11 +7,19 @@ const api = axios.create({
 // Add a request interceptor to add the auth token
 api.interceptors.request.use(
     (config) => {
-        const userStr = localStorage.getItem('user');
-        if (userStr) {
-            const user = JSON.parse(userStr);
-            if (user.token) {
-                config.headers.Authorization = `Bearer ${user.token}`;
+        // First try the dedicated token key, then fall back to user.token
+        const token = localStorage.getItem('token');
+        if (token) {
+            config.headers.Authorization = `Bearer ${token}`;
+        } else {
+            const userStr = localStorage.getItem('user');
+            if (userStr) {
+                try {
+                    const user = JSON.parse(userStr);
+                    if (user.token) {
+                        config.headers.Authorization = `Bearer ${user.token}`;
+                    }
+                } catch (_) { /* ignore parse errors */ }
             }
         }
         return config;
