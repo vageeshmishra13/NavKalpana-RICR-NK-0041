@@ -1,7 +1,7 @@
 import axios from 'axios';
 
 const api = axios.create({
-    baseURL: import.meta.env.VITE_API_URL || 'http://localhost:5000/api',
+    baseURL: import.meta.env.VITE_API_URL || 'https://navkalpana-ricr-nk-0041-backend.onrender.com/api',
 });
 
 // Add a request interceptor to add the auth token
@@ -38,7 +38,7 @@ api.interceptors.response.use(
             // clear state and reload to trigger auto-login or redirect
             localStorage.removeItem('token');
             localStorage.removeItem('user');
-            window.location.reload(); 
+            window.location.reload();
         }
         return Promise.reject(error);
     }

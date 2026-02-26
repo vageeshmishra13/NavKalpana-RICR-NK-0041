@@ -1,7 +1,7 @@
 import axios from 'axios';
 
 const API = axios.create({
-  baseURL: import.meta.env.VITE_API_URL || 'http://localhost:5000/api',
+  baseURL: import.meta.env.VITE_API_URL || 'https://navkalpana-ricr-nk-0041-backend.onrender.com/api',
 });
 
 // Attach JWT token to every request
